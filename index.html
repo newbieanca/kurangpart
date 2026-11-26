@@ -79,7 +79,7 @@ input:focus,select:focus{outline:0;border-color:var(--ink);box-shadow:0 0 0 3px 
   <form class="box" id="f" onsubmit="return false">
     <h2>Buat Laporan Shortage</h2>
     <label for="nama">Updated By</label>
-    <input id="nama" placeholder="cth: Dadang / Satori" autocomplete="off">
+    <input id="nama" placeholder="Masukkan Nama" autocomplete="off">
     <div class="row">
       <div><label for="tgl">Tanggal Update</label><input id="tgl" type="date"></div>
       <div><label for="line">Line</label><select id="line"><option>LINE A</option><option>LINE B</option></select></div>
@@ -235,7 +235,7 @@ function render(){
 function itemHTML(){return `<div class="item"><div class="ihead"><b></b><span><button type="button" class="lnk ipn">+ Tambah Part</button><button type="button" class="lnk idel">Hapus</button></span></div>
 <input class="ipart" list="partList" placeholder="Ketik nama part" autocomplete="off" style="margin-top:6px">
 <div class="row"><div><label>Kekurangan</label><input class="ikur" type="number" inputmode="numeric" placeholder="cth: -30"></div><div><label>Status</label><select class="ista"><option>Shortage</option><option>NG</option><option>Lain-lain</option></select></div></div>
-<label>Remarks</label><input class="irem" placeholder="cth: Psel 325 - on progress disposal"></div>`}
+<label>Remarks</label><input class="irem" placeholder="contoh: Losspack"></div>`}
 function addItem(){$('items').insertAdjacentHTML('beforeend',itemHTML());const a=$('items').querySelectorAll('.ipart');a[a.length-1].focus()}
 function resetItems(){$('items').innerHTML='';addItem()}
 $('addItem').onclick=addItem;

@@ -53,6 +53,8 @@ input:focus,select:focus{outline:0;border-color:var(--ink);box-shadow:0 0 0 3px 
 #sheetBg.on{display:flex}
 .sheet{background:#fff;width:100%;max-width:480px;border-radius:16px 16px 0 0;padding:16px 16px calc(20px + env(safe-area-inset-bottom));border-top:5px solid var(--red);animation:up .2s ease-out}
 @keyframes up{from{transform:translateY(40px);opacity:.4}to{transform:none;opacity:1}}
+.mon .btn{padding:10px 0;font-size:14px;flex:0 0 46px}.mon #mAll{flex:0 0 72px}.mon input{flex:1}
+.foot{text-align:center;color:#B8BCC2;font-size:12px;letter-spacing:.6px;margin-top:18px}
 .empty{text-align:center;color:var(--mute);padding:24px 8px;background:#fff;border:1px solid var(--line);border-radius:12px}
 </style>
 </head>
@@ -63,7 +65,7 @@ input:focus,select:focus{outline:0;border-color:var(--ink);box-shadow:0 0 0 3px 
   <form class="box" id="f" onsubmit="return false">
     <h2>Laporan Baru</h2>
     <label for="nama">Nama Pengupdate</label>
-    <input id="nama" placeholder="cth: Dadang / Satori" autocomplete="off">
+    <input id="nama" placeholder="masukkan nama" autocomplete="off">
     <div class="row">
       <div><label for="tgl">Tanggal Update</label><input id="tgl" type="date"></div>
       <div><label for="line">Line</label><select id="line"><option>LINE A</option><option>LINE B</option></select></div>
@@ -78,7 +80,7 @@ input:focus,select:focus{outline:0;border-color:var(--ink);box-shadow:0 0 0 3px 
       <div><label for="sa">Status Awal</label><select id="sa"><option>Shortage</option><option>NG</option><option>Lain-lain</option></select></div>
     </div>
     <label for="rem">Remarks</label>
-    <input id="rem" placeholder="cth: Psel 325 - on progress disposal">
+    <input id="rem" placeholder="cth: NG Handling">
     <div style="height:12px"></div>
     <button class="btn" id="send">+ KIRIM LAPORAN</button>
     <div class="msg" id="fmsg"></div>
@@ -90,10 +92,13 @@ input:focus,select:focus{outline:0;border-color:var(--ink);box-shadow:0 0 0 3px 
       <select id="fLine"><option value="">Semua Line</option><option>LINE A</option><option>LINE B</option></select>
       <select id="fSt"><option value="">Semua Status</option><option>Belum</option><option>Partial</option><option>Complete</option></select>
     </div>
-    <div class="row" style="margin-top:8px">
+    <div class="row mon" style="margin-top:8px">
+      <button class="btn sec" id="mPrev" aria-label="Bulan sebelumnya">◀</button>
       <input id="fMon" type="month" aria-label="Bulan">
-      <input id="fQ" type="search" placeholder="Cari model / part / nama">
+      <button class="btn sec" id="mNext" aria-label="Bulan berikutnya">▶</button>
+      <button class="btn sec" id="mAll">Semua</button>
     </div>
+    <input id="fQ" type="search" placeholder="Cari model / part / nama" style="margin-top:8px">
     <div class="msg" id="state"></div>
   </div>
 
@@ -105,6 +110,7 @@ input:focus,select:focus{outline:0;border-color:var(--ink);box-shadow:0 0 0 3px 
     <button class="btn sec" id="bImg">🖼️ Download Gambar Tabel</button>
     <button class="btn sec" id="bRef" style="grid-column:span 2">Muat ulang data</button>
   </div>
+  <div class="foot">Powered by NWBC</div>
 </div>
 
 <div id="sheetBg">
@@ -257,6 +263,8 @@ $('bImg').onclick=async()=>{
   b.disabled=false;
 };
 $('bRef').onclick=load;
+function shiftMon(n){let v=$('fMon').value||todayISO().slice(0,7),[y,m]=v.split('-').map(Number);m+=n;while(m>12){m-=12;y++}while(m<1){m+=12;y--}$('fMon').value=y+'-'+String(m).padStart(2,'0');render()}
+$('mPrev').onclick=()=>shiftMon(-1);$('mNext').onclick=()=>shiftMon(1);$('mAll').onclick=()=>{$('fMon').value='';render()};
 ['fLine','fSt','fMon'].forEach(i=>$(i).onchange=render);
 $('fQ').oninput=render;
 

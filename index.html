@@ -68,7 +68,7 @@ input:focus,select:focus{outline:0;border-color:var(--ink);box-shadow:0 0 0 3px 
   <form class="box" id="f" onsubmit="return false">
     <h2>Buat Laporan Shortage</h2>
     <label for="nama">Updated By</label>
-    <input id="nama" placeholder="cth: Dadang / Satori" autocomplete="off">
+    <input id="nama" placeholder="Masukkan Nama" autocomplete="off">
     <div class="row">
       <div><label for="tgl">Tanggal Update</label><input id="tgl" type="date"></div>
       <div><label for="line">Line</label><select id="line"><option>LINE A</option><option>LINE B</option></select></div>
@@ -79,11 +79,11 @@ input:focus,select:focus{outline:0;border-color:var(--ink);box-shadow:0 0 0 3px 
     <input id="part" list="partList" placeholder="Ketik nama part" autocomplete="off">
     <datalist id="partList"></datalist>
     <div class="row">
-      <div><label for="kurang">Kekurangan</label><input id="kurang" type="number" inputmode="numeric" placeholder="cth: -30"></div>
+      <div><label for="kurang">Kekurangan</label><input id="kurang" type="number" inputmode="numeric" placeholder="contoh: -30"></div>
       <div><label for="sa">Status</label><select id="sa"><option>Shortage</option><option>NG</option><option>Lain-lain</option></select></div>
     </div>
     <label for="rem">Remarks</label>
-    <input id="rem" placeholder="cth: Psel 325 - on progress disposal">
+    <input id="rem" placeholder="Isi Keterangan">
     <div style="height:12px"></div>
     <button class="btn" id="send">+ KIRIM LAPORAN</button>
     <div class="msg" id="fmsg"></div>

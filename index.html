@@ -58,6 +58,17 @@ input:focus,select:focus{outline:0;border-color:var(--ink);box-shadow:0 0 0 3px 
 @keyframes up{from{transform:translateY(40px);opacity:.4}to{transform:none;opacity:1}}
 .mon .btn{padding:10px 0;font-size:14px;flex:0 0 46px}.mon #mAll{flex:0 0 72px}.mon input{flex:1}
 .foot{text-align:center;color:#B8BCC2;font-size:12px;letter-spacing:.6px;margin-top:18px}
+.prow{border-top:1px dashed var(--line);padding:9px 0 2px 10px;margin-top:8px;border-left:4px solid #999}
+.prow.Belum{border-left-color:var(--red)}.prow.Partial{border-left-color:var(--yel)}.prow.Complete{border-left-color:var(--grn)}
+.ptop{display:flex;justify-content:space-between;align-items:center;gap:8px}.pname{font-weight:800;font-size:15.5px}
+.pnum{font-size:13px;color:var(--ink2);margin:3px 0}.pnum b{font-weight:800}
+.Belum .sisa{color:#C5221F;background:none}.Partial .sisa{color:#8A5A00;background:none}.Complete .sisa{color:#0D652D;background:none}
+.pmeta{font-size:12px;color:var(--mute)}
+.prow .btn{margin-top:8px;padding:8px;font-size:13px}
+.gtitle{display:flex;align-items:center;gap:8px;min-width:0}.gtitle .model{margin:0;font-size:17px}
+#items{counter-reset:it}.item{counter-increment:it;border:1.5px solid var(--line);border-radius:10px;padding:10px;margin-top:10px;background:#FAFBFC}
+.ihead{display:flex;justify-content:space-between;align-items:center}.ihead b{font-size:13px;color:var(--ink2)}.ihead b::before{content:"Part " counter(it)}
+.item:only-child .idel{display:none}.ihead span{display:flex;gap:14px}
 .empty{text-align:center;color:var(--mute);padding:24px 8px;background:#fff;border:1px solid var(--line);border-radius:12px}
 </style>
 </head>
@@ -68,22 +79,16 @@ input:focus,select:focus{outline:0;border-color:var(--ink);box-shadow:0 0 0 3px 
   <form class="box" id="f" onsubmit="return false">
     <h2>Buat Laporan Shortage</h2>
     <label for="nama">Updated By</label>
-    <input id="nama" placeholder="Masukkan Nama" autocomplete="off">
+    <input id="nama" placeholder="cth: Dadang / Satori" autocomplete="off">
     <div class="row">
       <div><label for="tgl">Tanggal Update</label><input id="tgl" type="date"></div>
       <div><label for="line">Line</label><select id="line"><option>LINE A</option><option>LINE B</option></select></div>
     </div>
     <div class="lblrow"><label for="model">Model</label><button type="button" class="lnk" id="addModelBtn">+ Tambah Model</button></div>
     <select id="model"><option value="">Memuat model...</option></select>
-    <div class="lblrow"><label for="part">Part</label><button type="button" class="lnk" id="addPartBtn">+ Tambah Part</button></div>
-    <input id="part" list="partList" placeholder="Ketik nama part" autocomplete="off">
     <datalist id="partList"></datalist>
-    <div class="row">
-      <div><label for="kurang">Kekurangan</label><input id="kurang" type="number" inputmode="numeric" placeholder="contoh: -30"></div>
-      <div><label for="sa">Status</label><select id="sa"><option>Shortage</option><option>NG</option><option>Lain-lain</option></select></div>
-    </div>
-    <label for="rem">Remarks</label>
-    <input id="rem" placeholder="Isi Keterangan">
+    <div id="items"></div>
+    <button type="button" class="btn sec" id="addItem" style="margin-top:10px">+ Tambah Part Lain (model sama)</button>
     <div style="height:12px"></div>
     <button class="btn" id="send">+ KIRIM LAPORAN</button>
     <div class="msg" id="fmsg"></div>
@@ -102,6 +107,7 @@ input:focus,select:focus{outline:0;border-color:var(--ink);box-shadow:0 0 0 3px 
       <button class="btn sec" id="mAll">Semua</button>
     </div>
     <input id="fQ" type="search" placeholder="Cari model / part / nama" style="margin-top:8px">
+    <button type="button" class="btn sec" id="hideDone" style="margin-top:8px"></button>
     <div class="msg" id="state"></div>
   </div>
 
@@ -151,7 +157,7 @@ const API='https://script.google.com/macros/s/AKfycbzYGUSx7fqmCXE8zc7iY4rY0w4bzK
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const todayISO=()=>new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Jakarta'});
-let D=[],cur=null,MODELS=[],PARTS=[],addKind=null;
+let D=[],cur=null,MODELS=[],PARTS=[],addKind=null,addTarget=null,hideDone=false,SUMTXT='';
 
 // Manifest inline untuk Add to Home Screen
 (function(){
@@ -202,42 +208,64 @@ function filtered(){
   });
 }
 
+function visible(){const B=filtered();return hideDone?B.filter(d=>d.statusCMC!=='Complete'):B}
+function worst(a){return a.some(d=>d.statusCMC==='Belum')?'Belum':a.some(d=>d.statusCMC==='Partial')?'Partial':'Complete'}
 function render(){
-  const L=filtered(),c={Belum:0,Partial:0,Complete:0};
-  L.forEach(d=>{if(c[d.statusCMC]!=null)c[d.statusCMC]++});
-  $('sum').innerHTML=`<div class="tile"><b>${L.length}</b><small>Total</small></div><div class="tile r"><b>${c.Belum}</b><small>🔴 Belum</small></div><div class="tile y"><b>${c.Partial}</b><small>🟡 Partial</small></div><div class="tile g"><b>${c.Complete}</b><small>🟢 Complete</small></div>`;
-  $('list').innerHTML=L.length?L.map(d=>`
-  <div class="card ${esc(d.statusCMC)}">
-    <div class="top"><span class="badge ${d.line==='LINE B'?'LINEB':'LINEA'}">${esc(d.line)}</span><span class="badge s${esc(d.statusCMC)}">${esc(d.statusCMC)}</span></div>
-    <div class="meta" style="margin-top:6px">${esc(d.tanggal)} • ${esc(d.nama)}</div>
-    <div class="model">${esc(d.model)}</div>
-    <div class="part">${esc(d.part)}</div><div class="stats"><div><small>Kurang</small><b>${d.kurang}</b></div><div><small>Datang</small><b>${d.datang}</b></div><div class="sisa"><small>Sisa</small><b>${d.sisa}</b></div></div>
-    <div class="meta">${esc(d.statusAwal)}${d.remarks?' • '+esc(d.remarks):''}</div>
+  const B=filtered(),L=visible(),c={Belum:0,Partial:0,Complete:0};
+  B.forEach(d=>{if(c[d.statusCMC]!=null)c[d.statusCMC]++});
+  SUMTXT='Total '+B.length+' | Belum '+c.Belum+' | Partial '+c.Partial+' | Complete '+c.Complete;
+  $('sum').innerHTML=`<div class="tile"><b>${B.length}</b><small>Total</small></div><div class="tile r"><b>${c.Belum}</b><small>🔴 Belum</small></div><div class="tile y"><b>${c.Partial}</b><small>🟡 Partial</small></div><div class="tile g"><b>${c.Complete}</b><small>🟢 Complete</small></div>`;
+  $('hideDone').textContent=hideDone?'👁 Tampilkan yang Complete':'🙈 Sembunyikan yang Complete';
+  const G=new Map();
+  L.forEach(d=>{const k=d.line+'|'+d.model;if(!G.has(k))G.set(k,[]);G.get(k).push(d)});
+  let h='';
+  G.forEach(a=>{
+    const w=worst(a),f=a[0];
+    h+=`<div class="card ${w}"><div class="top"><div class="gtitle"><span class="badge ${f.line==='LINE B'?'LINEB':'LINEA'}">${esc(f.line)}</span><span class="model">${esc(f.model)}</span></div><span class="meta">${a.length} part</span></div>`
+    +a.map(d=>`<div class="prow ${esc(d.statusCMC)}"><div class="ptop"><span class="pname">${esc(d.part)}</span><span class="badge s${esc(d.statusCMC)}">${esc(d.statusCMC)}</span></div>
+    <div class="pnum">Kurang <b>${d.kurang}</b> • Datang <b>${d.datang}</b> • Sisa <b class="sisa">${d.sisa}</b></div>
+    <div class="pmeta">${esc(d.tanggal)} • ${esc(d.nama)} • ${esc(d.statusAwal)}${d.remarks?' • '+esc(d.remarks):''}</div>
     ${d.updateCMC?`<div class="cmc">CMC: ${esc(d.updateCMC)}${d.terakhir?' ('+esc(d.terakhir)+')':''}</div>`:''}
-    <button class="btn sec" data-id="${esc(d.id)}">✏️ UPDATE CMC</button>
-  </div>`).join(''):'<div class="empty">Belum ada laporan untuk filter ini.</div>';
+    <button class="btn sec" data-id="${esc(d.id)}">✏️ UPDATE CMC</button></div>`).join('')+'</div>';
+  });
+  $('list').innerHTML=h||'<div class="empty">Belum ada laporan untuk filter ini.</div>';
 }
+
+// Form multi-part
+function itemHTML(){return `<div class="item"><div class="ihead"><b></b><span><button type="button" class="lnk ipn">+ Tambah Part</button><button type="button" class="lnk idel">Hapus</button></span></div>
+<input class="ipart" list="partList" placeholder="Ketik nama part" autocomplete="off" style="margin-top:6px">
+<div class="row"><div><label>Kekurangan</label><input class="ikur" type="number" inputmode="numeric" placeholder="cth: -30"></div><div><label>Status</label><select class="ista"><option>Shortage</option><option>NG</option><option>Lain-lain</option></select></div></div>
+<label>Remarks</label><input class="irem" placeholder="cth: Psel 325 - on progress disposal"></div>`}
+function addItem(){$('items').insertAdjacentHTML('beforeend',itemHTML());const a=$('items').querySelectorAll('.ipart');a[a.length-1].focus()}
+function resetItems(){$('items').innerHTML='';addItem()}
+$('addItem').onclick=addItem;
+$('items').onclick=e=>{
+  const it=e.target.closest('.item');if(!it)return;
+  if(e.target.closest('.idel'))it.remove();
+  else if(e.target.closest('.ipn')){const i=it.querySelector('.ipart');openAdd('part',i.value.trim(),i)}
+};
 
 // Kirim laporan
 $('send').onclick=async()=>{
   const m=$('fmsg');m.className='msg';
-  const b={action:'add',nama:$('nama').value.trim(),tanggal:$('tgl').value,line:$('line').value,model:$('model').value,part:$('part').value.trim(),kurang:Number($('kurang').value),statusAwal:$('sa').value,remarks:$('rem').value.trim()};
-  if(!b.nama)return m.className='msg err',m.textContent='Nama wajib diisi.';
-  if(!b.model||b.model==='__new__')return m.className='msg err',m.textContent='Pilih model.';
-  if(!b.part)return m.className='msg err',m.textContent='Isi part.';
-  if($('kurang').value===''||!(b.kurang<0))return m.className='msg err',m.textContent='Kekurangan harus angka negatif, cth: -30.';
-  const hit=PARTS.find(p=>p.toLowerCase()===b.part.toLowerCase());
-  if(hit)b.part=hit;
-  else{
-    if(!confirm('Part "'+b.part+'" belum terdaftar. Tambahkan ke daftar Part dan kirim laporan?'))return;
-    try{const r=await post({action:'addPart',name:b.part});b.part=r.name}catch(e){m.className='msg err';m.textContent='Gagal menambah part: '+e.message;return}
+  const nama=$('nama').value.trim(),model=$('model').value;
+  if(!nama)return m.className='msg err',m.textContent='Updated By wajib diisi.';
+  if(!model||model==='__new__')return m.className='msg err',m.textContent='Pilih model.';
+  const items=[...document.querySelectorAll('#items .item')].map(el=>({part:el.querySelector('.ipart').value.replace(/\s+/g,' ').trim(),raw:el.querySelector('.ikur').value,kurang:Number(el.querySelector('.ikur').value),statusAwal:el.querySelector('.ista').value,remarks:el.querySelector('.irem').value.trim()}));
+  for(let i=0;i<items.length;i++){
+    if(!items[i].part)return m.className='msg err',m.textContent='Isi nama part ke-'+(i+1)+'.';
+    if(items[i].raw===''||!(items[i].kurang<0))return m.className='msg err',m.textContent='Kekurangan part ke-'+(i+1)+' harus angka negatif, cth: -30.';
   }
+  const fresh=[];
+  items.forEach(it=>{const hit=PARTS.find(p=>p.toLowerCase()===it.part.toLowerCase());if(hit)it.part=hit;else fresh.push(it)});
+  if(fresh.length&&!confirm('Part belum terdaftar:\n'+[...new Set(fresh.map(i=>i.part))].join('\n')+'\n\nTambahkan ke daftar Part dan kirim laporan?'))return;
   $('send').disabled=true;m.textContent='Mengirim...';
   try{
-    await post(b);
-    m.className='msg ok';m.textContent='Terkirim';
-    ['part','kurang','rem'].forEach(i=>$(i).value='');
-    try{localStorage.setItem('pp_nama',b.nama)}catch(e){}
+    for(const it of fresh){const r=await post({action:'addPart',name:it.part});it.part=r.name}
+    await post({action:'add',nama,tanggal:$('tgl').value,line:$('line').value,model,items:items.map(({part,kurang,statusAwal,remarks})=>({part,kurang,statusAwal,remarks}))});
+    m.className='msg ok';m.textContent='Terkirim ('+items.length+' part)';
+    resetItems();
+    try{localStorage.setItem('pp_nama',nama)}catch(e){}
     await load();
   }catch(e){m.className='msg err';m.textContent='Gagal kirim: '+e.message}
   $('send').disabled=false;
@@ -266,12 +294,22 @@ $('sSave').onclick=async()=>{
 };
 
 // Export
+function buildWA(L,now){
+  const lines=[...new Set(L.map(d=>d.line))].sort();
+  let t='*UPDATE PENDING PART - '+now+'*\n';
+  lines.forEach((ln,i)=>{
+    if(i>0)t+='\n----------------------\n';
+    t+='\n*'+ln+'*\n';
+    const ms=new Map();
+    L.filter(d=>d.line===ln).forEach(d=>{if(!ms.has(d.model))ms.set(d.model,[]);ms.get(d.model).push(d)});
+    let j=0;
+    ms.forEach((arr,mod)=>{t+=(j++?'\n':'')+'• *'+mod+'*\n'+arr.map(d=>'    - '+d.part+' '+d.sisa+' '+d.statusCMC.toUpperCase()).join('\n')+'\n'});
+  });
+  return t.trim();
+}
 $('bWa').onclick=async()=>{
-  const L=filtered().slice().reverse(),g={},o=[];
-  L.forEach(d=>{const k=d.line+' | '+d.model;(g[k]=g[k]||[]).push(d)});
   const now=new Date().toLocaleDateString('en-GB',{timeZone:'Asia/Jakarta'});
-  let t=`*UPDATE PENDING PART - ${now}*\n`;
-  Object.keys(g).forEach(k=>{t+=`\n${k}\n`+g[k].map(d=>`    - ${d.part} ${d.sisa} ${d.statusCMC.toUpperCase()}`).join('\n')+'\n'});
+  const t=buildWA(visible().slice().reverse(),now);
   try{await navigator.clipboard.writeText(t);alert('Teks WhatsApp disalin.')}
   catch(e){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove();alert('Teks WhatsApp disalin.')}
 };
@@ -279,16 +317,21 @@ $('bImg').onclick=async()=>{
   if(!window.html2canvas)return alert('html2canvas belum termuat. Cek koneksi internet.');
   const b=$('bImg');b.disabled=true;
   try{
-    const cv=await html2canvas($('list'),{backgroundColor:'#F4F5F7',scale:2});
+    const now=new Date().toLocaleDateString('en-GB',{timeZone:'Asia/Jakarta'}),sum=SUMTXT;
+    const cv=await html2canvas($('list'),{backgroundColor:'#F4F5F7',scale:2,onclone:doc=>{
+      doc.querySelectorAll('#list .btn').forEach(x=>x.remove());
+      const c=doc.getElementById('list'),h=doc.createElement('div');
+      h.style.cssText='font-weight:800;font-size:15px;padding:2px 2px 10px;color:#202124';
+      h.textContent='SHORTAGES | Update '+now+' | '+sum;c.insertBefore(h,c.firstChild);
+    }});
     const a=document.createElement('a');a.download='pending-part-'+todayISO()+'.png';a.href=cv.toDataURL('image/png');a.click();
   }catch(e){alert('Gagal membuat gambar: '+e.message)}
   b.disabled=false;
 };
 $('bRef').onclick=load;
-function openAdd(kind,pre){addKind=kind;$('aTitle').textContent=kind==='model'?'Tambah Model Baru':'Tambah Part Baru';$('aName').value=pre||'';$('aName').placeholder=kind==='model'?'cth: ES-T90MW-HK':'cth: Top Cover';$('amsg').textContent='';$('addBg').classList.add('on');setTimeout(()=>$('aName').focus(),150)}
+function openAdd(kind,pre,target){addKind=kind;addTarget=target||null;$('aTitle').textContent=kind==='model'?'Tambah Model Baru':'Tambah Part Baru';$('aName').value=pre||'';$('aName').placeholder=kind==='model'?'cth: ES-T90MW-HK':'cth: Top Cover';$('amsg').textContent='';$('addBg').classList.add('on');setTimeout(()=>$('aName').focus(),150)}
 function closeAdd(){$('addBg').classList.remove('on');if($('model').value==='__new__')$('model').value='';addKind=null}
 $('addModelBtn').onclick=()=>openAdd('model');
-$('addPartBtn').onclick=()=>openAdd('part',$('part').value.trim());
 $('model').onchange=()=>{if($('model').value==='__new__')openAdd('model')};
 $('aCancel').onclick=closeAdd;
 $('addBg').onclick=e=>{if(e.target===$('addBg'))closeAdd()};
@@ -300,7 +343,7 @@ $('aSave').onclick=async()=>{
     const j=await post({action:kind==='model'?'addModel':'addPart',name});
     $('addBg').classList.remove('on');addKind=null;
     await load();
-    if(kind==='model')$('model').value=j.name;else $('part').value=j.name;
+    if(kind==='model')$('model').value=j.name;else if(addTarget)addTarget.value=j.name;
     const f=$('fmsg');f.className='msg ok';f.textContent=(j.exists?'Sudah ada di daftar: ':'Ditambahkan ke daftar: ')+j.name;
   }catch(e){m.className='msg err';m.textContent='Gagal menyimpan: '+e.message}
   $('aSave').disabled=false;
@@ -309,9 +352,11 @@ function shiftMon(n){let v=$('fMon').value||todayISO().slice(0,7),[y,m]=v.split(
 $('mPrev').onclick=()=>shiftMon(-1);$('mNext').onclick=()=>shiftMon(1);$('mAll').onclick=()=>{$('fMon').value='';render()};
 ['fLine','fSt','fMon'].forEach(i=>$(i).onchange=render);
 $('fQ').oninput=render;
+$('hideDone').onclick=()=>{hideDone=!hideDone;try{localStorage.setItem('pp_hide',hideDone?'1':'0')}catch(e){}render()};
 
 $('tgl').value=todayISO();$('fMon').value=todayISO().slice(0,7);
-try{$('nama').value=localStorage.getItem('pp_nama')||''}catch(e){}
+try{$('nama').value=localStorage.getItem('pp_nama')||'';hideDone=localStorage.getItem('pp_hide')==='1'}catch(e){}
+resetItems();
 load();
 </script>
 </body>

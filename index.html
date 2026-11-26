@@ -234,8 +234,8 @@ function render(){
 // Form multi-part
 function itemHTML(){return `<div class="item"><div class="ihead"><b></b><span><button type="button" class="lnk ipn">+ Tambah Part</button><button type="button" class="lnk idel">Hapus</button></span></div>
 <input class="ipart" list="partList" placeholder="Ketik nama part" autocomplete="off" style="margin-top:6px">
-<div class="row"><div><label>Kekurangan</label><input class="ikur" type="number" inputmode="numeric" placeholder="cth: -30"></div><div><label>Status</label><select class="ista"><option>Shortage</option><option>NG</option><option>Lain-lain</option></select></div></div>
-<label>Remarks</label><input class="irem" placeholder="contoh: Losspack"></div>`}
+<div class="row"><div><label>Kekurangan (angka saja)</label><input class="ikur" type="number" inputmode="numeric" min="0" placeholder="cth: 30 (jadi -30)"></div><div><label>Status</label><select class="ista"><option>Shortage</option><option>NG</option><option>Lain-lain</option></select></div></div>
+<label>Remarks</label><input class="irem" placeholder="cth: Losspack"></div>`}
 function addItem(){$('items').insertAdjacentHTML('beforeend',itemHTML());const a=$('items').querySelectorAll('.ipart');a[a.length-1].focus()}
 function resetItems(){$('items').innerHTML='';addItem()}
 $('addItem').onclick=addItem;
@@ -251,10 +251,10 @@ $('send').onclick=async()=>{
   const nama=$('nama').value.trim(),model=$('model').value;
   if(!nama)return m.className='msg err',m.textContent='Updated By wajib diisi.';
   if(!model||model==='__new__')return m.className='msg err',m.textContent='Pilih model.';
-  const items=[...document.querySelectorAll('#items .item')].map(el=>({part:el.querySelector('.ipart').value.replace(/\s+/g,' ').trim(),raw:el.querySelector('.ikur').value,kurang:Number(el.querySelector('.ikur').value),statusAwal:el.querySelector('.ista').value,remarks:el.querySelector('.irem').value.trim()}));
+  const items=[...document.querySelectorAll('#items .item')].map(el=>({part:el.querySelector('.ipart').value.replace(/\s+/g,' ').trim(),raw:el.querySelector('.ikur').value,kurang:-Math.abs(Number(el.querySelector('.ikur').value)),statusAwal:el.querySelector('.ista').value,remarks:el.querySelector('.irem').value.trim()}));
   for(let i=0;i<items.length;i++){
     if(!items[i].part)return m.className='msg err',m.textContent='Isi nama part ke-'+(i+1)+'.';
-    if(items[i].raw===''||!(items[i].kurang<0))return m.className='msg err',m.textContent='Kekurangan part ke-'+(i+1)+' harus angka negatif, cth: -30.';
+    if(items[i].raw===''||!(items[i].kurang<0))return m.className='msg err',m.textContent='Kekurangan part ke-'+(i+1)+': isi angka lebih dari 0, cth: 30 (otomatis jadi -30).';
   }
   const fresh=[];
   items.forEach(it=>{const hit=PARTS.find(p=>p.toLowerCase()===it.part.toLowerCase());if(hit)it.part=hit;else fresh.push(it)});

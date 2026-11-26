@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Pending Part">
-<title>Pending Part Recehan</title>
+<title>Pending Part Notice</title>
 <style>
 :root{--red:#E60012;--ink:#202124;--ink2:#3C4043;--mute:#5F6368;--bg:#F4F5F7;--line:#DADCE0;--yel:#F5B400;--grn:#188038}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -64,8 +64,8 @@ input:focus,select:focus{outline:0;border-color:var(--ink);box-shadow:0 0 0 3px 
 
   <form class="box" id="f" onsubmit="return false">
     <h2>Laporan Baru</h2>
-    <label for="nama">Nama Pengupdate</label>
-    <input id="nama" placeholder="masukkan nama" autocomplete="off">
+    <label for="nama">Nama Pencatat</label>
+    <input id="nama" placeholder="Masukkan Nama" autocomplete="off">
     <div class="row">
       <div><label for="tgl">Tanggal Update</label><input id="tgl" type="date"></div>
       <div><label for="line">Line</label><select id="line"><option>LINE A</option><option>LINE B</option></select></div>
@@ -76,7 +76,7 @@ input:focus,select:focus{outline:0;border-color:var(--ink);box-shadow:0 0 0 3px 
     <input id="part" list="partList" placeholder="Ketik nama part" autocomplete="off">
     <datalist id="partList"></datalist>
     <div class="row">
-      <div><label for="kurang">Kekurangan</label><input id="kurang" type="number" inputmode="numeric" placeholder="cth: -30"></div>
+      <div><label for="kurang">Kekurangan</label><input id="kurang" type="number" inputmode="numeric" placeholder="cth: -30 (gunakan tanda minus)"></div>
       <div><label for="sa">Status Awal</label><select id="sa"><option>Shortage</option><option>NG</option><option>Lain-lain</option></select></div>
     </div>
     <label for="rem">Remarks</label>

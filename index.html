@@ -145,17 +145,28 @@ async function post(body){
 }
 
 async function load(){
-  $('state').className='msg';$('state').textContent='Memuat data...';
+  const st=$('state'),ctl=new AbortController(),t=setTimeout(()=>ctl.abort(),25000);
+  st.className='msg';st.textContent='Memuat data...';
+  const id=(API.split('/s/')[1]||'').slice(0,8);
   try{
-    const r=await fetch(API); const j=await r.json(); if(!j.ok) throw new Error(j.error);
+    const r=await fetch(API+'?t='+Date.now(),{signal:ctl.signal});
+    const txt=await r.text();let j;
+    try{j=JSON.parse(txt)}catch(_){throw new Error('Respons bukan JSON (HTTP '+r.status+'). Biasanya akses deployment belum "Anyone" atau URL bukan /exec yang benar.')}
+    if(!j.ok) throw new Error(j.error);
     D=j.data||[];
-    const mv=$('model').value;
-    $('model').innerHTML='<option value="">Pilih model</option>'+(j.models||[]).map(m=>`<option>${esc(m)}</option>`).join('');
+    const mv=$('model').value,M=j.models||[],P=j.parts||[];
+    $('model').innerHTML='<option value="">'+(M.length?'Pilih model':'Tab MODEL kosong')+'</option>'+M.map(m=>`<option>${esc(m)}</option>`).join('');
     if(mv) $('model').value=mv;
-    $('partList').innerHTML=(j.parts||[]).map(p=>`<option value="${esc(p)}">`).join('');
-    $('state').textContent='';
+    $('partList').innerHTML=P.map(p=>`<option value="${esc(p)}">`).join('');
+    st.className='msg ok';st.textContent=`Terhubung: ${D.length} laporan, ${M.length} model, ${P.length} part`;
     render();
-  }catch(e){$('state').className='msg err';$('state').textContent='Gagal memuat: '+e.message}
+  }catch(e){
+    let m=e.message;
+    if(e.name==='AbortError')m='Waktu habis (25 detik). Cek sinyal.';
+    else if(m==='Failed to fetch'||m==='Load failed')m='Tidak bisa terhubung ke Apps Script. Cek URL /exec dan akses "Anyone". Buka aplikasi di Chrome/Safari, bukan pratinjau chat.';
+    st.className='msg err';st.textContent='Gagal memuat ('+id+'...): '+m;
+    if($('model').options.length<=1)$('model').innerHTML='<option value="">Gagal memuat model, lihat pesan di Riwayat</option>';
+  }finally{clearTimeout(t)}
 }
 
 function filtered(){

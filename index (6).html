@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#202124">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Pending Part">
+<title>Pending Part Recehan</title>
+<style>
+:root{--red:#E60012;--ink:#202124;--ink2:#3C4043;--mute:#5F6368;--bg:#F4F5F7;--line:#DADCE0;--yel:#F5B400;--grn:#188038}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.4 Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:480px;margin:0 auto;padding:12px;padding-bottom:40px}
+.hero{display:flex;align-items:center;gap:12px;padding:14px;border-radius:12px;color:#fff;margin-bottom:12px;background:var(--ink);border-bottom:4px solid var(--red)}
+.logo{width:44px;height:44px;border-radius:10px;background:var(--red);color:#fff;font-weight:800;font-size:17px;display:grid;place-items:center;flex:none}
+.hero h1{font-size:19px;margin:0;font-weight:800;letter-spacing:.2px}.hero p{margin:2px 0 0;font-size:12.5px;color:#BDC1C6}
+h2{font-size:15px;margin:0 0 10px;display:flex;align-items:center;gap:8px;color:var(--ink);font-weight:800}
+h2::before{content:"";width:5px;height:18px;border-radius:2px;background:var(--red)}
+.box{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
+label{display:block;font-size:12.5px;font-weight:700;color:var(--ink2);margin:10px 0 4px}
+input,select,textarea{width:100%;font:inherit;padding:12px;border:1.5px solid var(--line);border-radius:9px;background:#fff;color:inherit}
+input:focus,select:focus{outline:0;border-color:var(--ink);box-shadow:0 0 0 3px rgba(230,0,18,.18)}
+.row{display:flex;gap:8px}.row>*{flex:1;min-width:0}
+.btn{display:block;width:100%;border:0;border-radius:9px;padding:14px;font:inherit;font-weight:800;cursor:pointer;color:#fff;background:var(--red);letter-spacing:.2px}
+.btn.sec{background:#fff;color:var(--ink);border:1.5px solid var(--ink)}
+.btn:active{transform:scale(.98)}.btn:disabled{opacity:.6}
+.msg{font-size:13.5px;margin-top:8px;min-height:18px}.err{color:#C5221F;font-weight:600}.ok{color:var(--grn);font-weight:700}
+#sum{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:4px 0 12px}
+.tile{border-radius:10px;padding:8px 4px;text-align:center;color:#fff;background:var(--ink)}
+.tile b{display:block;font-size:22px;font-weight:800;line-height:1.1}.tile small{font-size:11.5px;font-weight:700;opacity:.95}
+.tile.r{background:var(--red)}.tile.y{background:var(--yel);color:#2a1d00}.tile.g{background:var(--grn)}
+.card{border-radius:12px;padding:12px 12px 12px 14px;margin-bottom:10px;border:1px solid var(--line);border-left:7px solid #999;background:#fff}
+.card.Belum{border-left-color:var(--red)}.card.Partial{border-left-color:var(--yel)}.card.Complete{border-left-color:var(--grn)}
+.top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.badge{font-size:12px;font-weight:800;padding:4px 10px;border-radius:6px;color:#fff;white-space:nowrap;letter-spacing:.3px}
+.LINEA{background:#1A56DB}.LINEB{background:#7E3AF2}
+.sBelum{background:var(--red)}.sPartial{background:var(--yel);color:#2a1d00}.sComplete{background:var(--grn)}
+.meta{font-size:12.5px;color:var(--mute)}
+.model{font-weight:800;font-size:18px;margin:6px 0 0;color:var(--ink)}
+.part{font-weight:700;font-size:15px;color:var(--ink2);margin:1px 0 8px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px}
+.stats div{background:var(--bg);border-radius:8px;padding:7px 4px;text-align:center}
+.stats small{display:block;font-size:11px;font-weight:700;color:var(--mute)}.stats b{font-size:20px;font-weight:800}
+.Belum .sisa{background:#FDE7E9;color:#B00010}.Partial .sisa{background:#FFF3CD;color:#7A5200}.Complete .sisa{background:#E6F4EA;color:#0D652D}
+.cmc{font-size:12.5px;color:var(--ink2);margin-top:8px;padding:7px 10px;border-radius:8px;background:var(--bg);border-left:3px solid var(--ink2)}
+.card .btn{margin-top:10px;padding:11px;font-size:14px}
+.tools{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+.tools .btn{font-size:13.5px;padding:12px 6px}
+#sheetBg{position:fixed;inset:0;background:rgba(32,33,36,.6);display:none;align-items:flex-end;justify-content:center;z-index:10}
+#sheetBg.on{display:flex}
+.sheet{background:#fff;width:100%;max-width:480px;border-radius:16px 16px 0 0;padding:16px 16px calc(20px + env(safe-area-inset-bottom));border-top:5px solid var(--red);animation:up .2s ease-out}
+@keyframes up{from{transform:translateY(40px);opacity:.4}to{transform:none;opacity:1}}
+.empty{text-align:center;color:var(--mute);padding:24px 8px;background:#fff;border:1px solid var(--line);border-radius:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero"><div class="logo"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-label="Forklift"><path d="M17 3v15M17 17h5"/><rect x="3" y="12" width="11" height="5"/><path d="M6 12V6h5l2 6"/><circle cx="7" cy="19" r="2" fill="#fff"/><circle cx="13" cy="19" r="2" fill="#fff"/></svg></div><div><h1>Pending Part Recehan</h1><p>Recehan Prod • Laporan kekurangan part</p></div></header>
+
+  <form class="box" id="f" onsubmit="return false">
+    <h2>Laporan Baru</h2>
+    <label for="nama">Nama Pengupdate</label>
+    <input id="nama" placeholder="cth: Dadang / Satori" autocomplete="off">
+    <div class="row">
+      <div><label for="tgl">Tanggal Update</label><input id="tgl" type="date"></div>
+      <div><label for="line">Line</label><select id="line"><option>LINE A</option><option>LINE B</option></select></div>
+    </div>
+    <label for="model">Model</label>
+    <select id="model"><option value="">Memuat model...</option></select>
+    <label for="part">Part</label>
+    <input id="part" list="partList" placeholder="Ketik nama part" autocomplete="off">
+    <datalist id="partList"></datalist>
+    <div class="row">
+      <div><label for="kurang">Kekurangan</label><input id="kurang" type="number" inputmode="numeric" placeholder="cth: -30"></div>
+      <div><label for="sa">Status Awal</label><select id="sa"><option>Shortage</option><option>NG</option><option>Lain-lain</option></select></div>
+    </div>
+    <label for="rem">Remarks</label>
+    <input id="rem" placeholder="cth: Psel 325 - on progress disposal">
+    <div style="height:12px"></div>
+    <button class="btn" id="send">+ KIRIM LAPORAN</button>
+    <div class="msg" id="fmsg"></div>
+  </form>
+
+  <div class="box">
+    <h2>Riwayat</h2>
+    <div class="row">
+      <select id="fLine"><option value="">Semua Line</option><option>LINE A</option><option>LINE B</option></select>
+      <select id="fSt"><option value="">Semua Status</option><option>Belum</option><option>Partial</option><option>Complete</option></select>
+    </div>
+    <div class="row" style="margin-top:8px">
+      <input id="fMon" type="month" aria-label="Bulan">
+      <input id="fQ" type="search" placeholder="Cari model / part / nama">
+    </div>
+    <div class="msg" id="state"></div>
+  </div>
+
+  <div id="sum"></div>
+  <div id="list"></div>
+
+  <div class="tools">
+    <button class="btn sec" id="bWa">📋 Copy Teks WhatsApp</button>
+    <button class="btn sec" id="bImg">🖼️ Download Gambar Tabel</button>
+    <button class="btn sec" id="bRef" style="grid-column:span 2">Muat ulang data</button>
+  </div>
+</div>
+
+<div id="sheetBg">
+  <div class="sheet" role="dialog" aria-modal="true">
+    <h2>Update CMC</h2>
+    <div id="sInfo" class="meta" style="margin-bottom:6px"></div>
+    <label for="sQty">QTY YANG SUDAH DATANG</label>
+    <input id="sQty" type="number" inputmode="numeric" min="1" placeholder="cth: 10">
+    <label for="sKet">KETERANGAN UPDATE CMC</label>
+    <input id="sKet" placeholder="cth: Sudah datang 10 dari CMC">
+    <div class="msg" id="smsg"></div>
+    <div class="row" style="margin-top:6px">
+      <button class="btn sec" id="sCancel">Batal</button>
+      <button class="btn" id="sSave">SIMPAN UPDATE</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+const API='https://script.google.com/macros/s/AKfycbzYGUSx7fqmCXE8zc7iY4rY0w4bzK6YKPBMmvDkrHZCs-YTYPf0SsiF6dEEUDV3SaGQxQ/exec';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const todayISO=()=>new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Jakarta'});
+let D=[],cur=null;
+
+// Manifest inline untuk Add to Home Screen
+(function(){
+  const icon='data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><rect width="192" height="192" rx="36" fill="#E60012"/><g transform="translate(36 36) scale(5)" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3v15M17 17h5"/><rect x="3" y="12" width="11" height="5"/><path d="M6 12V6h5l2 6"/><circle cx="7" cy="19" r="2" fill="#fff"/><circle cx="13" cy="19" r="2" fill="#fff"/></g></svg>');
+  const m={name:'Pending Part Recehan',short_name:'Pending Part',start_url:'.',display:'standalone',background_color:'#F4F5F7',theme_color:'#202124',icons:[{src:icon,sizes:'192x192',type:'image/svg+xml'}]};
+  const l=document.createElement('link');l.rel='manifest';l.href='data:application/manifest+json,'+encodeURIComponent(JSON.stringify(m));document.head.appendChild(l);
+  const a=document.createElement('link');a.rel='apple-touch-icon';a.href=icon;document.head.appendChild(a);
+})();
+
+async function post(body){
+  const r=await fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body)});
+  const j=await r.json(); if(!j.ok) throw new Error(j.error||'Gagal'); return j;
+}
+
+async function load(){
+  $('state').className='msg';$('state').textContent='Memuat data...';
+  try{
+    const r=await fetch(API); const j=await r.json(); if(!j.ok) throw new Error(j.error);
+    D=j.data||[];
+    const mv=$('model').value;
+    $('model').innerHTML='<option value="">Pilih model</option>'+(j.models||[]).map(m=>`<option>${esc(m)}</option>`).join('');
+    if(mv) $('model').value=mv;
+    $('partList').innerHTML=(j.parts||[]).map(p=>`<option value="${esc(p)}">`).join('');
+    $('state').textContent='';
+    render();
+  }catch(e){$('state').className='msg err';$('state').textContent='Gagal memuat: '+e.message}
+}
+
+function filtered(){
+  const l=$('fLine').value,s=$('fSt').value,mo=$('fMon').value,q=$('fQ').value.trim().toLowerCase();
+  return D.filter(d=>{
+    if(l&&d.line!==l)return false;
+    if(s&&d.statusCMC!==s)return false;
+    if(mo&&(d.tanggal.slice(6,10)+'-'+d.tanggal.slice(3,5))!==mo)return false;
+    if(q&&!(d.model+' '+d.part+' '+d.nama).toLowerCase().includes(q))return false;
+    return true;
+  });
+}
+
+function render(){
+  const L=filtered(),c={Belum:0,Partial:0,Complete:0};
+  L.forEach(d=>{if(c[d.statusCMC]!=null)c[d.statusCMC]++});
+  $('sum').innerHTML=`<div class="tile"><b>${L.length}</b><small>Total</small></div><div class="tile r"><b>${c.Belum}</b><small>🔴 Belum</small></div><div class="tile y"><b>${c.Partial}</b><small>🟡 Partial</small></div><div class="tile g"><b>${c.Complete}</b><small>🟢 Complete</small></div>`;
+  $('list').innerHTML=L.length?L.map(d=>`
+  <div class="card ${esc(d.statusCMC)}">
+    <div class="top"><span class="badge ${d.line==='LINE B'?'LINEB':'LINEA'}">${esc(d.line)}</span><span class="badge s${esc(d.statusCMC)}">${esc(d.statusCMC)}</span></div>
+    <div class="meta" style="margin-top:6px">${esc(d.tanggal)} • ${esc(d.nama)}</div>
+    <div class="model">${esc(d.model)}</div>
+    <div class="part">${esc(d.part)}</div><div class="stats"><div><small>Kurang</small><b>${d.kurang}</b></div><div><small>Datang</small><b>${d.datang}</b></div><div class="sisa"><small>Sisa</small><b>${d.sisa}</b></div></div>
+    <div class="meta">${esc(d.statusAwal)}${d.remarks?' • '+esc(d.remarks):''}</div>
+    ${d.updateCMC?`<div class="cmc">CMC: ${esc(d.updateCMC)}${d.terakhir?' ('+esc(d.terakhir)+')':''}</div>`:''}
+    <button class="btn sec" data-id="${esc(d.id)}">✏️ UPDATE CMC</button>
+  </div>`).join(''):'<div class="empty">Belum ada laporan untuk filter ini.</div>';
+}
+
+// Kirim laporan
+$('send').onclick=async()=>{
+  const m=$('fmsg');m.className='msg';
+  const b={action:'add',nama:$('nama').value.trim(),tanggal:$('tgl').value,line:$('line').value,model:$('model').value,part:$('part').value.trim(),kurang:Number($('kurang').value),statusAwal:$('sa').value,remarks:$('rem').value.trim()};
+  if(!b.nama)return m.className='msg err',m.textContent='Nama wajib diisi.';
+  if(!b.model)return m.className='msg err',m.textContent='Pilih model.';
+  if(!b.part)return m.className='msg err',m.textContent='Isi part.';
+  if($('kurang').value===''||!(b.kurang<0))return m.className='msg err',m.textContent='Kekurangan harus angka negatif, cth: -30.';
+  $('send').disabled=true;m.textContent='Mengirim...';
+  try{
+    await post(b);
+    m.className='msg ok';m.textContent='Terkirim';
+    ['part','kurang','rem'].forEach(i=>$(i).value='');
+    try{localStorage.setItem('pp_nama',b.nama)}catch(e){}
+    await load();
+  }catch(e){m.className='msg err';m.textContent='Gagal kirim: '+e.message}
+  $('send').disabled=false;
+};
+
+// Update CMC
+$('list').onclick=e=>{
+  const id=e.target.closest('button[data-id]');if(!id)return;
+  cur=D.find(d=>d.id===id.dataset.id);if(!cur)return;
+  $('sInfo').textContent=`${cur.model} - ${cur.part} | Sisa ${cur.sisa}`;
+  $('sQty').value='';$('sKet').value='';$('smsg').textContent='';
+  $('sheetBg').classList.add('on');setTimeout(()=>$('sQty').focus(),150);
+};
+const closeSheet=()=>{$('sheetBg').classList.remove('on');cur=null};
+$('sCancel').onclick=closeSheet;
+$('sheetBg').onclick=e=>{if(e.target===$('sheetBg'))closeSheet()};
+$('sSave').onclick=async()=>{
+  const m=$('smsg'),q=Number($('sQty').value);m.className='msg';
+  if(!(q>0))return m.className='msg err',m.textContent='Qty harus lebih dari 0.';
+  $('sSave').disabled=true;m.textContent='Menyimpan...';
+  try{
+    await post({action:'update',id:cur.id,datang:q,updateCMC:$('sKet').value.trim()});
+    closeSheet();await load();
+  }catch(e){m.className='msg err';m.textContent='Gagal simpan: '+e.message}
+  $('sSave').disabled=false;
+};
+
+// Export
+$('bWa').onclick=async()=>{
+  const L=filtered().slice().reverse(),g={},o=[];
+  L.forEach(d=>{const k=d.line+' | '+d.model;(g[k]=g[k]||[]).push(d)});
+  const now=new Date().toLocaleDateString('en-GB',{timeZone:'Asia/Jakarta'});
+  let t=`*UPDATE PENDING PART - ${now}*\n`;
+  Object.keys(g).forEach(k=>{t+=`\n${k}\n`+g[k].map(d=>`    - ${d.part} ${d.sisa} ${d.statusCMC.toUpperCase()}`).join('\n')+'\n'});
+  try{await navigator.clipboard.writeText(t);alert('Teks WhatsApp disalin.')}
+  catch(e){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove();alert('Teks WhatsApp disalin.')}
+};
+$('bImg').onclick=async()=>{
+  if(!window.html2canvas)return alert('html2canvas belum termuat. Cek koneksi internet.');
+  const b=$('bImg');b.disabled=true;
+  try{
+    const cv=await html2canvas($('list'),{backgroundColor:'#F4F5F7',scale:2});
+    const a=document.createElement('a');a.download='pending-part-'+todayISO()+'.png';a.href=cv.toDataURL('image/png');a.click();
+  }catch(e){alert('Gagal membuat gambar: '+e.message)}
+  b.disabled=false;
+};
+$('bRef').onclick=load;
+['fLine','fSt','fMon'].forEach(i=>$(i).onchange=render);
+$('fQ').oninput=render;
+
+$('tgl').value=todayISO();$('fMon').value=todayISO().slice(0,7);
+try{$('nama').value=localStorage.getItem('pp_nama')||''}catch(e){}
+load();
+</script>
+</body>
+</html>

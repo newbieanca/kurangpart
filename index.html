@@ -87,6 +87,9 @@ input:focus,select:focus{outline:0;border-color:var(--ink);box-shadow:0 0 0 3px 
 #list.cap .more,#list.cap .tap{display:none}
 #detBg{position:fixed;inset:0;background:rgba(32,33,36,.6);display:none;align-items:flex-end;justify-content:center;z-index:9}#detBg.on{display:flex}
 .empty{text-align:center;color:var(--mute);padding:24px 8px;background:#fff;border:1px solid var(--line);border-radius:12px}
+#sheetBg,#addBg,#detBg{align-items:flex-start;padding:max(14px,5vh) 12px 12px;overflow-y:auto}
+.sheet{border-radius:16px;padding:16px;animation:pop .18s ease-out}
+@keyframes pop{from{transform:translateY(-12px) scale(.97);opacity:0}to{transform:none;opacity:1}}
 </style>
 </head>
 <body>
@@ -96,7 +99,7 @@ input:focus,select:focus{outline:0;border-color:var(--ink);box-shadow:0 0 0 3px 
   <form class="box" id="f" onsubmit="return false">
     <h2>Buat Laporan Shortage</h2>
     <label for="nama">Updated By</label>
-    <input id="nama" placeholder="cth: Dadang / Satori" autocomplete="off">
+    <input id="nama" placeholder="Masukkan Nama" autocomplete="off">
     <div class="row">
       <div><label for="tgl">Tanggal Update</label><input id="tgl" type="date"></div>
       <div><label for="line">Line</label><select id="line"><option>LINE A</option><option>LINE B</option></select></div>
@@ -277,8 +280,8 @@ function render(){
 // Form multi-part
 function itemHTML(){return `<div class="item"><div class="ihead"><b></b><span><button type="button" class="lnk ipn">+ Tambah Part</button><button type="button" class="lnk idel">Hapus</button></span></div>
 <input class="ipart" list="partList" placeholder="Ketik nama part" autocomplete="off" style="margin-top:6px">
-<div class="row"><div><label>Kekurangan (angka saja)</label><input class="ikur" type="number" inputmode="numeric" min="0" placeholder="cth: 30 (jadi -30)"></div><div><label>Status</label><select class="ista"><option>Shortage</option><option>NG</option><option>Lain-lain</option></select></div></div>
-<label>Remarks</label><input class="irem" placeholder="cth: Psel 325 - on progress disposal"></div>`}
+<div class="row"><div><label>Kekurangan (angka saja)</label><input class="ikur" type="number" inputmode="numeric" min="0" placeholder="qty kurang"></div><div><label>Status</label><select class="ista"><option>Shortage</option><option>NG</option><option>Lain-lain</option></select></div></div>
+<label>Remarks</label><input class="irem" placeholder="cth: Losspack"></div>`}
 function addItem(){$('items').insertAdjacentHTML('beforeend',itemHTML());const a=$('items').querySelectorAll('.ipart');a[a.length-1].focus()}
 function resetItems(){$('items').innerHTML='';addItem()}
 $('addItem').onclick=addItem;
